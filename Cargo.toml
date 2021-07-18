@@ -1,0 +1,17 @@
+[package]
+name = "normie"
+version = "0.1.0"
+authors = ["ceca69ec8e1bcad6c6d79e1dcf7214ff67766580a62b7d19a6fb094c97b4f2dc"]
+edition = "2018"
+include = [
+	"src/*",
+	"Cargo.toml",
+	"README.md"
+]
+description = "Rename directories and files into Unix friendly standard."
+documentation = "https://docs.rs/normie"
+repository = "https://github.com/ceca69ec/normie"
+keywords = ["cli", "normalizer", "rename", "unix"]
+categories = ["command-line-interface"]
+license = "Apache-2.0"
+readme = "README.md"
