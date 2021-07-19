@@ -10,12 +10,12 @@ fn main() {
 
     let args = arg_analyzer(env::args()).unwrap_or_else(|err| {
         eprintln!(
-            "{}: {}.\nTry '{} --help' for more information.", me, err, me
+            "{}: {}.\nTry '{} -h' for more information.", me, err, me
         );
         std::process::exit(96);
     });
 
-    if args.lop.contains(&"help".to_string()) {
+    if args.flg.contains(&'h') {
         println!("normie 0.1.0\n\nUSAGE:\n\t{} {}.", me, USAGE);
     } else {
         run(args).unwrap_or_else(|err| {
