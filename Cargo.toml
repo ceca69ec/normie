@@ -1,6 +1,6 @@
 [package]
 name = "normie"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["ceca69ec8e1bcad6c6d79e1dcf7214ff67766580a62b7d19a6fb094c97b4f2dc"]
 edition = "2018"
 include = [
@@ -8,7 +8,7 @@ include = [
 	"Cargo.toml",
 	"README.md"
 ]
-description = "Just another bulk renaming tool."
+description = "Just another filename normalizer tool."
 documentation = "https://docs.rs/normie"
 repository = "https://github.com/ceca69ec/normie"
 keywords = ["cli", "normalizer", "rename", "unix"]

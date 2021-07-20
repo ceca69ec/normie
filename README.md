@@ -1,13 +1,15 @@
 normie
 ======
 
-**Just another bulk renaming tool.**
+**Just another filename normalizer tool.**
+
+Recursively normalize directories and filenames to Unix friendly standard.
 
 No dependencies, really simple and fast.
 
 ## Example
 
-```shell
+```console
 $ touch "B)E(T%T@E*R T*H*I&S W@A*Y#" "G)O(O%@D N*A*M&E@**#"
 $ ls
 'B)E(T%T@E*R T*H*I&S W@A*Y#'  'G)O(O%@D N*A*M&E@**#'
@@ -19,7 +21,7 @@ better_this_way.tgz  good_name.tgz
 ## Help
 
 ```shell
-normie 0.1.0
+normie 1.0.0
 
 USAGE:
 	normie [FLAG]... DIRECTORY_OR_FILE...

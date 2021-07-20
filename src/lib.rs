@@ -1,10 +1,12 @@
-//! **Just another bulk renaming tool.**
+//! **Just another filename normalizer tool.**
+//!
+//! Recursively normalize directories and filenames to Unix friendly standard.
 //!
 //! No dependencies, really simple and fast.
 //!
 //! ## Example
 //!
-//! ```shell
+//! ```console
 //! $ touch "B)E(T%T@E*R T*H*I&S W@A*Y#" "G)O(O%@D N*A*M&E@**#"
 //! $ ls
 //! 'B)E(T%T@E*R T*H*I&S W@A*Y#'  'G)O(O%@D N*A*M&E@**#'
@@ -16,7 +18,7 @@
 //! ## Help
 //!
 //! ```shell
-//! normie 0.1.0
+//! normie 1.0.0
 //!
 //! USAGE:
 //! 	normie [FLAG]... DIRECTORY_OR_FILE...
@@ -26,7 +28,7 @@
 //! 	-h: Show this help information.
 //! 	-i: Insert the specified text at the beginning of the filename.
 //! 	-l: Transform the resulting filename into all lowercase characters.
-//! 	-r: Remove these characters: '!"#$%&'()*+,/:;<=>?@[\]^`{|}~ªº'.
+//! 	-r: Remove these characters: '!"#$%&'()*+,/:;<=>?@[\]^`{|}~ªº\0'.
 //! 	-t: Interactively asks for confirmation of each action.
 //! 	-u: Transform the resulting filename into all uppercase characters.
 //! 	-v: Show information about the performed actions.
@@ -51,13 +53,13 @@ FLAGS:
 \t-h: Show this help information.
 \t-i: Insert the specified text at the beginning of the filename.
 \t-l: Transform the resulting filename into all lowercase characters.
-\t-r: Remove these characters: '!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº'.
+\t-r: Remove these characters: '!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº\0'.
 \t-t: Interactively asks for confirmation of each action.
 \t-u: Transform the resulting filename into all uppercase characters.
 \t-v: Show information about the performed actions";
 
 /// Especial characters to be removed with option 'r'.
-const SPECIAL: &str = "!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº"; // Exclude ._-
+const SPECIAL: &str = "!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº\0"; // exclude ._-
 
 /// Valid characters used as parameter flags.
 const FLAGS: [char; 8] = ['a', 'h', 'i', 'l', 'r', 't', 'u', 'v'];
@@ -147,7 +149,7 @@ fn mod_str(text: &str, args: &Parsed) -> String {
 
 /// Asks the user about renaming or not (option 't').
 fn interactive(me: &str, old: &str, new: &str) -> Result<(), io::Error> {
-    print!("{}: rename '{}' to '{}'? ", me, old, new);
+    print!("\x1b[1m{}\x1b[0m: rename '{}' to '{}'? ", me, old, new);
     io::stdout().flush()?;
     let mut input = String::new();
     io::stdin().read_line(&mut input)?;
@@ -163,11 +165,11 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
         let path = Path::new(p);
         let name = match path.file_name() {
             Some(n) => n.to_str().unwrap(),
-            None => return Err(format!("{}: {} has no valid name\n", args.me, p))
+            None => return Err(format!("\x1b[1m{}\x1b[0m: {} has no valid name\n", args.me, p))
         };
         let target = mod_str(name, args);
         if name == target {
-            return Err(format!("{}: nothing to do with '{}'\n", args.me, p))
+            return Err(format!("\x1b[1m{}\x1b[0m: nothing to do with '{}'\n", args.me, p))
         }
         let res = format!("{}{}", p.strip_suffix(name).unwrap(), target);
         if args.flg.contains(&'t') && interactive(&args.me, p, &res).is_err() {
@@ -181,7 +183,7 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
             },
             Err(e) => return Err(
                 format!(
-                    "{}: cannot rename '{}' to '{}': {}.\n",
+                    "\x1b[1m{}\x1b[0m: cannot rename '{}' to '{}': {}.\n",
                     args.me,
                     p,
                     res,
@@ -189,9 +191,7 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
             ))
         };
     } else {
-        return Err(
-            format!("{}: '{}' is not a valid directory/file.\n", args.me, p)
-        )
+        return Err(format!("\x1b[1m{}\x1b[0m: '{}' is not a valid directory/file.\n", args.me, p))
     }
     Ok(())
 }
@@ -200,16 +200,19 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
 #[doc(hidden)]
 pub fn run(args: Parsed) -> Result<(), String> {
     let mut e = String::new();
-
     for path in &args.pos {
         if let Err(errs) = rename(path, &args) {
             e.push_str(&errs);
         }
     }
     if !e.is_empty() {
-        return Err(format!(
-            "{}{} error: some actions could not be performed", e,args.me
-        ))
+        return Err(
+            format!(
+                "{}\x1b[1m{}\x1b[0m: \x1b[1;31merror\x1b[0m, some actions could not be performed",
+                e,
+                args.me
+            )
+        )
     }
     Ok(())
 }
@@ -227,11 +230,11 @@ mod tests {
         args.flg = vec!['u'];
         assert_eq!(mod_str("upper-case", &args), "UPPER-CASE");
         args.flg = vec!['u', 'a'];
-        args.app = "-case".to_string();
+        args.app = String::from("-case");
         assert_eq!(mod_str("upper", &args), "UPPER-CASE");
         args.flg = vec!['u', 'i', 'r'];
         args.app = String::new();
-        args.ins = "upper".to_string();
+        args.ins = String::from("upper");
         assert_eq!(mod_str("-case", &args), "UPPER-CASE");
         args.flg = vec!['l'];
         assert_eq!(mod_str("Ho lA.LaY", &args), "ho_la.lay");
@@ -252,12 +255,28 @@ mod tests {
         assert!(rename(p, &args).is_ok());
         fs::remove_file("/tmp/this-sucks").unwrap();
 
-        let p = "/tmp/=>IS<=".to_string();
+        let p = "/tmp/=>IS<=";
         let mut args = Parsed::new();
         fs::File::create(&p).unwrap();
         args.flg = vec!['a', 'l', 'r'];
         args.app = String::from("-GOOD");
         assert!(rename(&p, &args).is_ok());
-        fs::remove_file("/tmp/is-good").unwrap()
+        fs::remove_file("/tmp/is-good").unwrap();
+
+        let p = "/tmp/B)E(T%T@E*R T*H*I&S W@A*Y#";
+        let mut args = Parsed::new();
+        fs::File::create(&p).unwrap();
+        args.flg = vec!['l', 'r', 'a'];
+        args.app = String::from(".tgz");
+        assert!(rename(&p, &args).is_ok());
+        fs::remove_file("/tmp/better_this_way.tgz").unwrap();
+
+        let p = "/tmp/G)O(O%@D N*A*M&E@**#";
+        let mut args = Parsed::new();
+        fs::File::create(&p).unwrap();
+        args.flg = vec!['l', 'r', 'a'];
+        args.app = String::from(".tgz");
+        assert!(rename(&p, &args).is_ok());
+        fs::remove_file("/tmp/good_name.tgz").unwrap();
     }
 }
