@@ -8,7 +8,7 @@ include = [
 	"Cargo.toml",
 	"README.md"
 ]
-description = "Rename directories and files into Unix friendly standard."
+description = "Just another bulk renaming tool."
 documentation = "https://docs.rs/normie"
 repository = "https://github.com/ceca69ec/normie"
 keywords = ["cli", "normalizer", "rename", "unix"]
