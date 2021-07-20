@@ -21,17 +21,17 @@
 //! normie 1.0.0
 //!
 //! USAGE:
-//! 	normie [FLAG]... DIRECTORY_OR_FILE...
+//!     normie [FLAG]... DIRECTORY_OR_FILE...
 //!
 //! FLAGS:
-//! 	-a: Append the specified text at the end of the filename.
-//! 	-h: Show this help information.
-//! 	-i: Insert the specified text at the beginning of the filename.
-//! 	-l: Transform the resulting filename into all lowercase characters.
-//! 	-r: Remove these characters: '!"#$%&'()*+,/:;<=>?@[\]^`{|}~ªº\0'.
-//! 	-t: Interactively asks for confirmation of each action.
-//! 	-u: Transform the resulting filename into all uppercase characters.
-//! 	-v: Show information about the performed actions.
+//!     -a: Append the specified text at the end of the filename.
+//!     -h: Show this help information.
+//!     -i: Insert the specified text at the beginning of the filename.
+//!     -l: Transform the resulting filename into all lowercase characters.
+//!     -r: Remove these characters: '!"#$%&'()*+,/:;<=>?@[\]^`{|}~ªº'.
+//!     -t: Interactively asks for confirmation of each action.
+//!     -u: Transform the resulting filename into all uppercase characters.
+//!     -v: Show information about the performed actions.
 //! ```
 //!
 //! ## Warning
@@ -49,17 +49,17 @@ pub const USAGE: &str =
 "[FLAG]... DIRECTORY_OR_FILE...
 
 FLAGS:
-\t-a: Append the specified text at the end of the filename.
-\t-h: Show this help information.
-\t-i: Insert the specified text at the beginning of the filename.
-\t-l: Transform the resulting filename into all lowercase characters.
-\t-r: Remove these characters: '!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº\0'.
-\t-t: Interactively asks for confirmation of each action.
-\t-u: Transform the resulting filename into all uppercase characters.
-\t-v: Show information about the performed actions";
+    -a: Append the specified text at the end of the filename.
+    -h: Show this help information.
+    -i: Insert the specified text at the beginning of the filename.
+    -l: Transform the resulting filename into all lowercase characters.
+    -r: Remove these characters: '!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº'.
+    -t: Interactively asks for confirmation of each action.
+    -u: Transform the resulting filename into all uppercase characters.
+    -v: Show information about the performed actions";
 
 /// Especial characters to be removed with option 'r'.
-const SPECIAL: &str = "!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº\0"; // exclude ._-
+const SPECIAL: &str = "!\"#$%&\'()*+,/:;<=>?@[\\]^`{|}~ªº"; // exclude ._-
 
 /// Valid characters used as parameter flags.
 const FLAGS: [char; 8] = ['a', 'h', 'i', 'l', 'r', 't', 'u', 'v'];
@@ -98,7 +98,7 @@ pub fn arg_analyzer(mut args: env::Args) -> Result<Parsed, String> {
     let mut out = Parsed::new();
     out.me = args.next().unwrap();
     for arg in args {
-        if let Some(stripped) = arg.strip_prefix("-") {
+        if let Some(stripped) = arg.strip_prefix('-') {
             out.flg.append(&mut stripped.chars().collect());
         } else if (out.flg.contains(&'a') || out.flg.contains(&'i')) && !Path::new(&arg).exists() {
             if out.flg.contains(&'a') && out.app.is_empty() {

@@ -19,7 +19,7 @@ fn main() {
     });
 
     if args.flg.contains(&'h') {
-        println!("normie 1.0.0\n\nUSAGE:\n\t{} {}.", me, USAGE);
+        println!("normie 1.0.0\n\nUSAGE:\n    {} {}.", me, USAGE);
     } else {
         run(args).unwrap_or_else(|err| {
             eprintln!("{}.", err);

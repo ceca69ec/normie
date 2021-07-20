@@ -24,17 +24,17 @@ better_this_way.tgz  good_name.tgz
 normie 1.0.0
 
 USAGE:
-	normie [FLAG]... DIRECTORY_OR_FILE...
+    normie [FLAG]... DIRECTORY_OR_FILE...
 
 FLAGS:
-	-a: Append the specified text at the end of the filename.
-	-h: Show this help information.
-	-i: Insert the specified text at the beginning of the filename.
-	-l: Transform the resulting filename into all lowercase characters.
-	-r: Remove these characters: '!"#$%&'()*+,/:;<=>?@[\]^`{|}~ªº'.
-	-t: Interactively asks for confirmation of each action.
-	-u: Transform the resulting filename into all uppercase characters.
-	-v: Show information about the performed actions.
+    -a: Append the specified text at the end of the filename.
+    -h: Show this help information.
+    -i: Insert the specified text at the beginning of the filename.
+    -l: Transform the resulting filename into all lowercase characters.
+    -r: Remove these characters: '!"#$%&'()*+,/:;<=>?@[\]^`{|}~ªº'.
+    -t: Interactively asks for confirmation of each action.
+    -u: Transform the resulting filename into all uppercase characters.
+    -v: Show information about the performed actions.
 ```
 
 ## Warning
