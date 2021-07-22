@@ -21,7 +21,7 @@ better_this_way.tgz  good_name.tgz
 ## Help
 
 ```shell
-normie 1.0.0
+normie 1.0.1
 
 USAGE:
     normie [FLAG]... DIRECTORY_OR_FILE...
@@ -35,6 +35,15 @@ FLAGS:
     -t: Interactively asks for confirmation of each action.
     -u: Transform the resulting filename into all uppercase characters.
     -v: Show information about the performed actions.
+```
+
+## Installation
+
+You have to install [rust](https://www.rust-lang.org/tools/install) and a
+ [liker](https://gcc.gnu.org/wiki/InstallingGCC) if you don't already have them.
+
+```shell
+$ cargo install normie
 ```
 
 ## Warning
