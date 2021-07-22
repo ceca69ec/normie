@@ -37,7 +37,7 @@
 //! ## Installation
 //!
 //! You have to install [rust](https://www.rust-lang.org/tools/install) and a
-//!  [liker](https://gcc.gnu.org/wiki/InstallingGCC) if you don't already have them.
+//!  [linker](https://gcc.gnu.org/wiki/InstallingGCC) if you don't already have them.
 //!
 //! ```shell
 //! $ cargo install normie
