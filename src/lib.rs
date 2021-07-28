@@ -105,7 +105,7 @@ pub fn arg_analyzer(mut args: env::Args) -> Result<Parsed, String> {
         return Err(String::from("missing file operand"));
     }
     let mut out = Parsed::new();
-    out.me = args.next().unwrap();
+    out.me = args.next().unwrap_or_default();
     for arg in args {
         if let Some(stripped) = arg.strip_prefix('-') {
             out.flg.append(&mut stripped.chars().collect());
@@ -140,7 +140,7 @@ pub fn arg_analyzer(mut args: env::Args) -> Result<Parsed, String> {
 
 /// Modify a string according to the options. Return a String.
 fn mod_str(text: &str, args: &Parsed) -> String {
-    let mut out = text.replace("\u{20}", "_").replace("\u{3000}", "_"); // common/ideographic space
+    let mut out = text.replace(|x| x == '\u{20}' || x == '\u{3000}', "_"); // common or ideographic
     if args.flg.contains(&'a') && !args.app.is_empty() { out.push_str(&args.app); }
     if args.flg.contains(&'i') && !args.ins.is_empty() { out.insert_str(0, &args.ins); }
     if args.flg.contains(&'r') {
@@ -173,14 +173,14 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
     if Path::new(p).exists() {
         let path = Path::new(p);
         let name = match path.file_name() {
-            Some(n) => n.to_str().unwrap(),
+            Some(n) => n.to_str().unwrap_or_default(),
             None => return Err(format!("\x1b[1m{}\x1b[0m: {} has no valid name\n", args.me, p))
         };
         let target = mod_str(name, args);
         if name == target {
             return Err(format!("\x1b[1m{}\x1b[0m: nothing to do with '{}'\n", args.me, p))
         }
-        let res = format!("{}{}", p.strip_suffix(name).unwrap(), target);
+        let res = format!("{}{}", p.strip_suffix(name).unwrap_or_default(), target);
         if args.flg.contains(&'t') && interactive(&args.me, p, &res).is_err() {
             return Ok(())
         }
@@ -196,8 +196,12 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
                     args.me,
                     p,
                     res,
-                    e.to_string().split(" (").next().unwrap_or("")
-            ))
+                    e.to_string()
+                        .split_once(" (")
+                        .unwrap_or_default()
+                        .0
+                )
+            )
         };
     } else {
         return Err(format!("\x1b[1m{}\x1b[0m: '{}' is not a valid directory/file.\n", args.me, p))
