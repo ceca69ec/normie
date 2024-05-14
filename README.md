@@ -21,7 +21,7 @@ better_this_way.tgz  good_name.tgz
 ## Help
 
 ```shell
-normie 1.0.1
+normie 1.0.2
 
 USAGE:
     normie [FLAG]... DIRECTORY_OR_FILE...

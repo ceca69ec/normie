@@ -11,15 +11,13 @@ fn main() {
     let args = arg_analyzer(env::args()).unwrap_or_else(|err| {
         eprintln!(
             "\x1b[1m{}\x1b[0m: \x1b[1;31merror\x1b[0m, {}.\nTry '{} -h' for more information.",
-            me,
-            err,
-            me
+            me, err, me
         );
         std::process::exit(96);
     });
 
     if args.flg.contains(&'h') {
-        println!("normie 1.0.1\n\nUSAGE:\n    {} {}.", me, USAGE);
+        println!("normie 1.0.2\n\nUSAGE:\n    {} {}.", me, USAGE);
     } else {
         run(args).unwrap_or_else(|err| {
             eprintln!("{}.", err);

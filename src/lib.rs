@@ -18,7 +18,7 @@
 //! ## Help
 //!
 //! ```shell
-//! normie 1.0.1
+//! normie 1.0.2
 //!
 //! USAGE:
 //!     normie [FLAG]... DIRECTORY_OR_FILE...
@@ -54,8 +54,7 @@ use std::path::Path;
 
 /// Help to use the binary.
 #[doc(hidden)]
-pub const USAGE: &str =
-"[FLAG]... DIRECTORY_OR_FILE...
+pub const USAGE: &str = "[FLAG]... DIRECTORY_OR_FILE...
 
 FLAGS:
     -a: Append the specified text at the end of the filename.
@@ -77,11 +76,11 @@ const FLAGS: [char; 8] = ['a', 'h', 'i', 'l', 'r', 't', 'u', 'v'];
 #[derive(Clone, Debug, Default, Eq, Hash, PartialEq, PartialOrd)]
 #[doc(hidden)]
 pub struct Parsed {
-    pub app: String,        // append this to the file name (start)
-    pub ins: String,        // insert this to the file name (end)
-    pub me: String,         // 'name' of the executed binary
-    pub flg: Vec<char>,     // list of argument flags
-    pub pos: Vec<String>    // list of positional arguments
+    pub app: String,      // append this to the file name (start)
+    pub ins: String,      // insert this to the file name (end)
+    pub me: String,       // 'name' of the executed binary
+    pub flg: Vec<char>,   // list of argument flags
+    pub pos: Vec<String>, // list of positional arguments
 }
 
 /// Implementation for the structure Args.
@@ -93,7 +92,7 @@ impl Parsed {
             ins: String::new(),
             me: String::new(),
             flg: Vec::new(),
-            pos: Vec::new()
+            pos: Vec::new(),
         }
     }
 }
@@ -119,20 +118,24 @@ pub fn arg_analyzer(mut args: env::Args) -> Result<Parsed, String> {
             out.pos.push(arg);
         }
     }
-    if out.flg.contains(&'h') { return Ok(out) }
-    if out.pos.is_empty() { return Err(String::from("missing file operand")) }
+    if out.flg.contains(&'h') {
+        return Ok(out);
+    }
+    if out.pos.is_empty() {
+        return Err(String::from("missing file operand"));
+    }
     if out.flg.contains(&'l') && out.flg.contains(&'u') {
-        return Err(String::from("options 'l' and 'u' not allowed at same time"))
+        return Err(String::from("options 'l' and 'u' not allowed at same time"));
     }
     if out.flg.contains(&'a') && out.app.is_empty() {
-        return Err(String::from("missing text to append"))
+        return Err(String::from("missing text to append"));
     }
     if out.flg.contains(&'i') && out.ins.is_empty() {
-        return Err(String::from("missing text to insert"))
+        return Err(String::from("missing text to insert"));
     }
     for c in &out.flg {
         if !FLAGS.contains(c) {
-            return Err(format!("invalid option -- '{}'", c))
+            return Err(format!("invalid option -- '{}'", c));
         }
     }
     Ok(out)
@@ -141,8 +144,12 @@ pub fn arg_analyzer(mut args: env::Args) -> Result<Parsed, String> {
 /// Modify a string according to the options. Return a String.
 fn mod_str(text: &str, args: &Parsed) -> String {
     let mut out = text.replace(|x| x == '\u{20}' || x == '\u{3000}', "_"); // common or ideographic
-    if args.flg.contains(&'a') && !args.app.is_empty() { out.push_str(&args.app); }
-    if args.flg.contains(&'i') && !args.ins.is_empty() { out.insert_str(0, &args.ins); }
+    if args.flg.contains(&'a') && !args.app.is_empty() {
+        out.push_str(&args.app);
+    }
+    if args.flg.contains(&'i') && !args.ins.is_empty() {
+        out.insert_str(0, &args.ins);
+    }
     if args.flg.contains(&'r') {
         for c in SPECIAL.chars() {
             out = out.replace(c, "");
@@ -163,7 +170,7 @@ fn interactive(me: &str, old: &str, new: &str) -> Result<(), io::Error> {
     let mut input = String::new();
     io::stdin().read_line(&mut input)?;
     if input.trim()[..1].to_lowercase() != "y" {
-        return Err(io::Error::new(io::ErrorKind::Other, "user said 'no'"))
+        return Err(io::Error::new(io::ErrorKind::Other, "user said 'no'"));
     }
     Ok(())
 }
@@ -174,37 +181,45 @@ fn rename(p: &str, args: &Parsed) -> Result<(), String> {
         let path = Path::new(p);
         let name = match path.file_name() {
             Some(n) => n.to_str().unwrap_or_default(),
-            None => return Err(format!("\x1b[1m{}\x1b[0m: {} has no valid name\n", args.me, p))
+            None => {
+                return Err(format!(
+                    "\x1b[1m{}\x1b[0m: {} has no valid name\n",
+                    args.me, p
+                ))
+            }
         };
         let target = mod_str(name, args);
         if name == target {
-            return Err(format!("\x1b[1m{}\x1b[0m: nothing to do with '{}'\n", args.me, p))
+            return Err(format!(
+                "\x1b[1m{}\x1b[0m: nothing to do with '{}'\n",
+                args.me, p
+            ));
         }
         let res = format!("{}{}", p.strip_suffix(name).unwrap_or_default(), target);
         if args.flg.contains(&'t') && interactive(&args.me, p, &res).is_err() {
-            return Ok(())
+            return Ok(());
         }
         match fs::rename(&path, &res[..]) {
             Ok(_) => {
                 if args.flg.contains(&'v') {
                     println!("renamed '{}' to '{}'.", p, res);
                 }
-            },
-            Err(e) => return Err(
-                format!(
+            }
+            Err(e) => {
+                return Err(format!(
                     "\x1b[1m{}\x1b[0m: cannot rename '{}' to '{}': {}.\n",
                     args.me,
                     p,
                     res,
-                    e.to_string()
-                        .split_once(" (")
-                        .unwrap_or_default()
-                        .0
-                )
-            )
+                    e.to_string().split_once(" (").unwrap_or_default().0
+                ))
+            }
         };
     } else {
-        return Err(format!("\x1b[1m{}\x1b[0m: '{}' is not a valid directory/file.\n", args.me, p))
+        return Err(format!(
+            "\x1b[1m{}\x1b[0m: '{}' is not a valid directory/file.\n",
+            args.me, p
+        ));
     }
     Ok(())
 }
@@ -219,13 +234,10 @@ pub fn run(args: Parsed) -> Result<(), String> {
         }
     }
     if !e.is_empty() {
-        return Err(
-            format!(
-                "{}\x1b[1m{}\x1b[0m: \x1b[1;31merror\x1b[0m, some actions could not be performed",
-                e,
-                args.me
-            )
-        )
+        return Err(format!(
+            "{}\x1b[1m{}\x1b[0m: \x1b[1;31merror\x1b[0m, some actions could not be performed",
+            e, args.me
+        ));
     }
     Ok(())
 }
